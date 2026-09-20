@@ -1,7 +1,7 @@
 {
   "name": "dune-testtools",
   "version": "2.10",
-  "description": "DUNE module dune-testtools, built from source at a pinned commit",
+  "description": "DUNE module dune-testtools, pinned to a git commit",
   "homepage": "https://github.com/dune-community/dune-testtools.git",
   "dependencies": [
     {

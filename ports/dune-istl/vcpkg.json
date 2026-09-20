@@ -1,7 +1,7 @@
 {
   "name": "dune-istl",
   "version": "2.10",
-  "description": "DUNE module dune-istl, built from source at a pinned commit",
+  "description": "DUNE module dune-istl, pinned to a git commit",
   "homepage": "https://github.com/dune-mirrors/dune-istl.git",
   "dependencies": [
     {

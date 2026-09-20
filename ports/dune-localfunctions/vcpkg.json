@@ -1,7 +1,7 @@
 {
   "name": "dune-localfunctions",
   "version": "2.10",
-  "description": "DUNE module dune-localfunctions, built from source at a pinned commit",
+  "description": "DUNE module dune-localfunctions, pinned to a git commit",
   "homepage": "https://github.com/dune-mirrors/dune-localfunctions.git",
   "dependencies": [
     {

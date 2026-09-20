@@ -162,7 +162,9 @@ def main() -> int:
     )
     args = parser.parse_args()
 
-    ports = sorted(path.name for path in PORTS_DIR.iterdir() if (path / "vcpkg.json").is_file())
+    ports = sorted(
+        path.name for path in PORTS_DIR.iterdir() if (path / "vcpkg.json").is_file()
+    )
     if not ports:
         raise SystemExit(f"no ports found under {PORTS_DIR}")
 
@@ -171,7 +173,9 @@ def main() -> int:
 
     for port in ports:
         entry, version, port_version = build_version_entry(port)
-        wanted[versions_file(port)] = merge_versions(port, entry, args.overwrite_version)
+        wanted[versions_file(port)] = merge_versions(
+            port, entry, args.overwrite_version
+        )
         baseline[port] = {"baseline": version, "port-version": port_version}
 
     wanted[VERSIONS_DIR / "baseline.json"] = dump_json({"default": baseline})
@@ -194,9 +198,15 @@ def main() -> int:
         for path in outdated:
             print(f"out of date: {path.relative_to(REGISTRY_ROOT)}", file=sys.stderr)
         for path in stale:
-            print(f"stale (no such port): {path.relative_to(REGISTRY_ROOT)}", file=sys.stderr)
+            print(
+                f"stale (no such port): {path.relative_to(REGISTRY_ROOT)}",
+                file=sys.stderr,
+            )
         if outdated or stale:
-            print("\nRun scripts/update-versions.py and commit the result.", file=sys.stderr)
+            print(
+                "\nRun scripts/update-versions.py and commit the result.",
+                file=sys.stderr,
+            )
             return 1
         print(f"versions database is up to date ({len(ports)} ports)")
         return 0

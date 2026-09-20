@@ -1,7 +1,7 @@
 {
   "name": "dune-grid-glue",
   "version": "2.10",
-  "description": "DUNE module dune-grid-glue, built from source at a pinned commit",
+  "description": "DUNE module dune-grid-glue, pinned to a git commit",
   "homepage": "https://github.com/dune-mirrors/dune-grid-glue.git",
   "dependencies": [
     {

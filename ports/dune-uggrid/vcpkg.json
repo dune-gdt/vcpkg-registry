@@ -1,7 +1,7 @@
 {
   "name": "dune-uggrid",
   "version": "2.10",
-  "description": "DUNE module dune-uggrid, built from source at a pinned commit",
+  "description": "DUNE module dune-uggrid, pinned to a git commit",
   "homepage": "https://github.com/dune-mirrors/dune-uggrid.git",
   "dependencies": [
     {

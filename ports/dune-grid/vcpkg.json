@@ -1,7 +1,7 @@
 {
   "name": "dune-grid",
   "version": "2.10",
-  "description": "DUNE module dune-grid, built from source at a pinned commit",
+  "description": "DUNE module dune-grid, pinned to a git commit",
   "homepage": "https://github.com/dune-mirrors/dune-grid.git",
   "dependencies": [
     {

@@ -1,7 +1,7 @@
 {
   "name": "dune-common",
   "version": "2.10",
-  "description": "DUNE module dune-common, built from source at a pinned commit",
+  "description": "DUNE module dune-common, pinned to a git commit",
   "homepage": "https://github.com/dune-community/dune-common.git",
   "dependencies": [
     {

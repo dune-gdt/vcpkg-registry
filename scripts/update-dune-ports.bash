@@ -167,7 +167,7 @@ for submodule_name in "${!SUBMODULE_INFO_HASH[@]}"; do
 {
     "name": "$submodule_name",
     "version": "$version",$port_version_field
-    "description": "DUNE module $submodule_name, built from source at a pinned commit",
+    "description": "DUNE module $submodule_name, pinned to a git commit",
     "homepage": "$homepage",
     "dependencies": [
 $dependencies
