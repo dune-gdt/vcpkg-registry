@@ -76,12 +76,22 @@ for submodule_name in "${!SUBMODULE_INFO_HASH[@]}"; do
     # Try to extract version from dune.module in the remote repo
     version="0.0.1"
     tmp_clone_dir="tmp/port_clone_$submodule_name"
-    [[ -d "$tmp_clone_dir" ]] || git clone "$url" "$tmp_clone_dir" &> /dev/null
+    # Point an existing scratch clone at the current URL before fetching: a
+    # module that moved to a different mirror would otherwise keep fetching the
+    # old remote and never find the new pin.
+    if [[ -d "$tmp_clone_dir" ]]; then
+        git -C "$tmp_clone_dir" remote set-url origin "$url"
+    else
+        git clone "$url" "$tmp_clone_dir" &> /dev/null
+    fi
     pushd "$tmp_clone_dir" &> /dev/null
     git fetch --all &> /dev/null
     git checkout "$git_hash" &> /dev/null
     if [[ -f "dune.module" ]]; then
-        found_version=$(grep -E '^Version: ' "dune.module" | head -n1 | sed 's/Version: *//')
+        # sed rather than grep: under `set -o pipefail` a grep that matches
+        # nothing fails the pipeline and `set -e` would abort before the
+        # default-version fallback below can run.
+        found_version=$(sed -n 's/^Version:[[:space:]]*//p' "dune.module" | head -n1)
         if [[ -n "$found_version" ]]; then
             echo "Found version: $found_version for $submodule_name"
             version="$found_version"

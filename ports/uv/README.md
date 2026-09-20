@@ -11,6 +11,8 @@ published in the release's
 installs the `uv` and `uvx` executables as vcpkg tools under `tools/uv/`.
 
 Prebuilt archives are mapped for `x64`/`arm64` on Linux, macOS and Windows.
+The Linux archives are glibc builds; a musl triplet is rejected outright
+rather than handed a binary it cannot run.
 
 To bump the version:
 

@@ -16,26 +16,28 @@ vcpkg_extract_source_archive(
 
 # mpfr is reconfigured with autoreconf, which needs autoconf/automake/libtool and
 # the autoconf-archive m4 macros (its configure.ac uses AX_* macros). Those come
-# from our overlay host-tool ports (declared as host dependencies in vcpkg.json),
-# but vcpkg does not put a host dependency's tools/<port>/bin on PATH automatically
-# and aclocal does not search the per-port share/<port>/aclocal macro dirs. Wire
-# both up here so the build does not fall back to the system autotools. See
-# .vcpkg-overlays/README.md.
-vcpkg_add_to_path(PREPEND "${CURRENT_HOST_INSTALLED_DIR}/tools/autoconf/bin")
-vcpkg_add_to_path(PREPEND "${CURRENT_HOST_INSTALLED_DIR}/tools/automake/bin")
-vcpkg_add_to_path(PREPEND "${CURRENT_HOST_INSTALLED_DIR}/tools/libtool/bin")
-file(GLOB mpfr_aclocal_dirs LIST_DIRECTORIES true
-    "${CURRENT_HOST_INSTALLED_DIR}/share/aclocal"
-    "${CURRENT_HOST_INSTALLED_DIR}/share/*/aclocal"
-)
-# aclocal splits ACLOCAL_PATH on ';' on native Windows hosts and ':' elsewhere.
-if(CMAKE_HOST_WIN32)
-    set(mpfr_path_sep ";")
-else()
-    set(mpfr_path_sep ":")
+# from this registry's host-tool ports (declared as host dependencies in
+# vcpkg.json), but vcpkg does not put a host dependency's tools/<port>/bin on
+# PATH automatically and aclocal does not search the per-port
+# share/<port>/aclocal macro dirs. Wire both up here so the build does not fall
+# back to the system autotools. See the registry README:
+# https://github.com/dune-gdt/vcpkg-registry#gnu-autotools-host-tools
+#
+# Those four ports are all "supports": "!windows", so vcpkg.json only depends on
+# them off Windows; guard the wiring to match, leaving a Windows host with
+# upstream's behaviour (whatever autotools it already has) rather than pointing
+# it at tool dirs that were never installed.
+if(NOT CMAKE_HOST_WIN32)
+    vcpkg_add_to_path(PREPEND "${CURRENT_HOST_INSTALLED_DIR}/tools/autoconf/bin")
+    vcpkg_add_to_path(PREPEND "${CURRENT_HOST_INSTALLED_DIR}/tools/automake/bin")
+    vcpkg_add_to_path(PREPEND "${CURRENT_HOST_INSTALLED_DIR}/tools/libtool/bin")
+    file(GLOB mpfr_aclocal_dirs LIST_DIRECTORIES true
+        "${CURRENT_HOST_INSTALLED_DIR}/share/aclocal"
+        "${CURRENT_HOST_INSTALLED_DIR}/share/*/aclocal"
+    )
+    list(JOIN mpfr_aclocal_dirs ":" mpfr_aclocal_path)
+    set(ENV{ACLOCAL_PATH} "${mpfr_aclocal_path}")
 endif()
-list(JOIN mpfr_aclocal_dirs "${mpfr_path_sep}" mpfr_aclocal_path)
-set(ENV{ACLOCAL_PATH} "${mpfr_aclocal_path}")
 
 vcpkg_make_configure(
     SOURCE_PATH "${SOURCE_PATH}"

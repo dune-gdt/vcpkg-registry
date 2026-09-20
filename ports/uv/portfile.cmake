@@ -26,6 +26,12 @@ elseif(VCPKG_TARGET_IS_OSX)
     set(UV_SHA256 "1f921d491ba5ffeea774eb04d6681ecee379101341cbb1500394993b541bf3f4")
   endif()
 elseif(VCPKG_TARGET_IS_LINUX)
+  # The Linux archives below are glibc builds, and a musl triplet would otherwise take this branch and install a binary
+  # that cannot run there. uv does publish musl artifacts; map them here (with their published SHA-256) if a musl
+  # triplet is ever needed, rather than letting one fall through silently.
+  if(TARGET_TRIPLET MATCHES "musl")
+    message(FATAL_ERROR "uv: triplet '${TARGET_TRIPLET}' targets musl, but only the glibc release archives are mapped.")
+  endif()
   if(VCPKG_TARGET_ARCHITECTURE STREQUAL "x64")
     set(UV_ARCHIVE "uv-x86_64-unknown-linux-gnu.tar.gz")
     set(UV_SHA256 "8c88519b0ef0af9801fcdee419bbb12116bd9e6b18e162ae093c932d8b264050")

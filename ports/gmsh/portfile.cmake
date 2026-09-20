@@ -42,7 +42,7 @@ vcpkg_cmake_configure(
         -DENABLE_GRAPHICS=OFF # Requires mesh, post, plugins and onelab
         -DENABLE_POST=OFF
         -DENABLE_PLUGINS=OFF
-        # dune-gdt overlay change (see .vcpkg-overlays/README.md): upstream ships these OFF,
+        # dune-gdt registry change (see this registry's README, "gmsh"): upstream ships these OFF,
         # which makes the built `gmsh` executable unable to read a .geo file at all
         # ("Gmsh parser is not compiled in this version") or mesh one -- just a thin CLI
         # wrapper around the library build. The docs build's gmsh tutorial notebook shells
@@ -61,7 +61,7 @@ vcpkg_cmake_configure(
         -DENABLE_CAIRO=OFF
         -DENABLE_CGNS=OFF
         -DENABLE_CGNS_CPEX0045=OFF
-        # dune-gdt overlay change: mesh generation (enabled above) needs a linear-algebra
+        # dune-gdt registry change: mesh generation (enabled above) needs a linear-algebra
         # backend for element-quality/smoothing steps -- Frontal-Delaunay meshing a plain
         # rectangle already hit "Matrix inversion requires Eigen or LAPACK" with this OFF
         # (and ENABLE_BLAS_LAPACK also OFF, upstream leaves both disabled). eigen3 is

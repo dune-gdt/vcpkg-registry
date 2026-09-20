@@ -15,19 +15,23 @@
     },
     {
       "name": "autoconf",
-      "host": true
+      "host": true,
+      "platform": "!windows"
     },
     {
       "name": "autoconf-archive",
-      "host": true
+      "host": true,
+      "platform": "!windows"
     },
     {
       "name": "automake",
-      "host": true
+      "host": true,
+      "platform": "!windows"
     },
     {
       "name": "libtool",
-      "host": true
+      "host": true,
+      "platform": "!windows"
     }
   ]
 }

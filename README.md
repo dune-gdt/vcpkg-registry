@@ -87,11 +87,16 @@ extracting the recorded `git-tree`, so **a port change is only visible once the
 versions database is regenerated**. After editing anything under `ports/`:
 
 ```bash
+pre-commit run --all-files          # formatting first -- see below
 scripts/update-versions.py          # rewrite versions/
 scripts/update-versions.py --check  # what CI runs
 ```
 
 and commit `ports/` and `versions/` together.
+
+Run the formatting hooks **before** regenerating: `clang-format` and
+`cmake-format` rewrite files under `ports/`, which changes their git tree, so
+formatting after the regeneration leaves `versions/` stale and fails CI.
 
 A published `version`/`port-version` pair has to keep resolving to the same
 sources, so `update-versions.py` refuses to re-point one at a new tree. Bump
@@ -119,6 +124,7 @@ the pinned commit. To refresh a pin, edit `scripts/module_list.bash` and rerun:
 
 ```bash
 scripts/update-dune-ports.bash
+pre-commit run --all-files
 scripts/update-versions.py
 ```
 
@@ -307,12 +313,15 @@ blobs over 100 MB before pushing, which rewrites every commit from February
 
 ### Pin policy caveat
 
-Pins currently point at *moving branch HEADs* rather than immutable tags, so the
-same pin can resolve to different sources as the mirrors advance. The registry
-makes that visible rather than fixing it: a published version keeps its recorded
-tree, but the `REF` inside that tree is still a branch HEAD's commit hash at the
-time it was written. For reproducible builds, prefer pinning to the exact release
-tag commit (`v2.10.x`) and bumping deliberately.
+A pin itself is reproducible: `scripts/module_list.bash` holds a full commit
+hash, and `vcpkg_from_git` resolves that same commit however far the branch has
+since advanced. What is not pinned is the *choice* of commit -- each hash was
+whatever `releases/2.10` pointed at when it was last refreshed, not a release
+tag. Rerunning `update-dune-ports.bash` against an advanced branch therefore
+silently selects a different commit, and nothing in the version number records
+which one (hence the `port-version` bump above). For builds you can reason
+about, prefer pinning to the exact release tag commit (`v2.10.x`) and bumping
+deliberately.
 
 ## Upgrade path to DUNE 2.11
 
