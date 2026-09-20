@@ -1,0 +1,19 @@
+{
+  "name": "dune-testtools",
+  "version": "2.10",
+  "description": "DUNE module dune-testtools, built from source at a pinned commit",
+  "homepage": "https://github.com/dune-community/dune-testtools.git",
+  "dependencies": [
+    {
+      "name": "vcpkg-cmake",
+      "host": true
+    },
+    {
+      "name": "vcpkg-cmake-config",
+      "host": true
+    },
+    {
+      "name": "dune-common"
+    }
+  ]
+}

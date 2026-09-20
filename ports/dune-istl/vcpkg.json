@@ -1,0 +1,19 @@
+{
+  "name": "dune-istl",
+  "version": "2.10",
+  "description": "DUNE module dune-istl, built from source at a pinned commit",
+  "homepage": "https://github.com/dune-mirrors/dune-istl.git",
+  "dependencies": [
+    {
+      "name": "vcpkg-cmake",
+      "host": true
+    },
+    {
+      "name": "vcpkg-cmake-config",
+      "host": true
+    },
+    {
+      "name": "dune-common"
+    }
+  ]
+}
