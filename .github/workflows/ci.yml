@@ -1,0 +1,79 @@
+---
+name: Registry checks
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  merge_group:
+  workflow_dispatch:
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+
+jobs:
+  versions:
+    name: Versions database is in sync
+    runs-on: ubuntu-26.04
+    permissions:
+      contents: read
+    steps:
+    - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      with:
+        persist-credentials: false
+        # The git-tree check below walks every published version, including ones
+        # from earlier commits, so it needs the history those trees live in.
+        fetch-depth: 0
+
+    # Catches the failure mode this registry is most exposed to: a port edited
+    # without rerunning update-versions.py, which leaves vcpkg resolving the
+    # previously recorded git-tree (i.e. silently building the old port).
+    - name: Check versions/ against ports/
+      run: scripts/update-versions.py --check
+
+    # A registry only works if every git-tree it records actually exists here:
+    # vcpkg resolves a version by extracting its recorded tree, so a tree that
+    # is missing fails at resolve time for whoever requested that version.
+    # update-versions.py keeps historical entries, so checking only the current
+    # port would let a stale one through.
+    - name: Check every recorded git-tree exists
+      run: |
+        rc=0
+        for versions_file in versions/*-/*.json; do
+          port=$(basename "${versions_file}" .json)
+
+          # Every published version, not just the current one.
+          while read -r tree; do
+            if [ "$(git cat-file -t "${tree}" 2>/dev/null)" != "tree" ]; then
+              echo "::error file=${versions_file}::${port}: recorded git-tree ${tree}" \
+                   "is not a tree object in this repository"
+              rc=1
+            fi
+          done < <(jq -r '.versions[]."git-tree"' "${versions_file}")
+
+          # ...and the port as checked in has to be one of them, or the baseline
+          # version resolves to something other than what is in ports/.
+          head_tree=$(git rev-parse "HEAD:ports/${port}")
+          if ! jq -e --arg tree "${head_tree}" \
+              '.versions | map(."git-tree") | index($tree)' "${versions_file}" > /dev/null; then
+            echo "::error file=${versions_file}::ports/${port} at HEAD is ${head_tree}," \
+                 "which is not recorded in ${versions_file}"
+            rc=1
+          fi
+        done
+        exit "${rc}"
+
+  pre-commit:
+    name: pre-commit
+    runs-on: ubuntu-26.04
+    permissions:
+      contents: read
+    steps:
+    - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      with:
+        persist-credentials: false
+    - uses: actions/setup-python@e9d6f990972a57673cdb72ec29e19d42ba28880f # v6.0.0
+      with:
+        python-version: '3.13'
+    - uses: pre-commit/action@2c7b3805fd2a0fd8c1884dcaebf91fc102a13ecd # v3.0.1
